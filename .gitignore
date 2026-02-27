@@ -12,3 +12,10 @@ profile.svg
 
 # Time trace
 trace.json
+
+rokit.exe
+kaledis.exe
+selene.exe
+stylua.exe
+dist
+.build

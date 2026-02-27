@@ -1,0 +1,12 @@
+"$schema" = "./kaledis.schema.json"
+
+[project]
+name = "space-station-15"
+src_path="src"
+detect_modules=true
+love_path="C:/Program Files/LOVE"
+
+[window]
+title = "Space Station 15"
+
+[audio]
