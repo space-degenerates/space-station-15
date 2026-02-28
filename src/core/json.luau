@@ -180,7 +180,7 @@ function json.parse(str, pos, end_delim)
 	if pos > #str then
 		error("Reached unexpected end of input.")
 	end
-	local pos = pos + #str:match("^%s*", pos) -- Skip whitespace.
+	pos = pos + #str:match("^%s*", pos) -- Skip whitespace.
 	local first = str:sub(pos, pos)
 	if first == "{" then -- Parse an object.
 		local obj, key, delim_found = {}, true, true

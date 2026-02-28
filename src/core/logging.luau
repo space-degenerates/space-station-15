@@ -1,8 +1,6 @@
-local engine = require("@self/init")
-
 local logging = {}
 
-function engine.logging.dump(o)
+function logging.dump(o)
 	if type(o) == "table" then
 		local s = "{ "
 		for k, v in pairs(o) do

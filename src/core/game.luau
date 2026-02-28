@@ -1,4 +1,4 @@
--- Core debug game module 
+-- Core debug game module
 
 local game = {}
 

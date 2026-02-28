@@ -23,11 +23,11 @@ end
 ---@return engine.point
 function PointClass:Mul(target)
 	-- if engine.isOfClass(target, PointClass) then
-		return point.point(self.x * target.x, self.y * target.y)
+	return point.point(self.x * target.x, self.y * target.y)
 	-- elseif classes.isOfClass(point, "number") then
-		-- return Point(self.x * target, self.y * target)
+	-- return Point(self.x * target, self.y * target)
 	-- else
-		-- return self
+	-- return self
 	-- end
 end
 
