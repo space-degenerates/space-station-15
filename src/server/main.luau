@@ -13,7 +13,7 @@ function server.init()
 	udp:settimeout(0)
 	udp:setsockname("*", 22122)
 
-	logger:log(string.format("[Server] Listening on %s:%d", "127.0.0.1", 22122))
+	logger:log(string.format("Listening on %s:%d", "127.0.0.1", 22122))
 end
 
 function server.sendTo(ip, port, message)
@@ -29,11 +29,11 @@ function love.update()
 
 			if not clients[ip] then
 				clients[ip] = port
-				logger:log(string.format("[Server] New client from %s:%d", ip, port))
+				logger:log(string.format("New client from %s:%d", ip, port))
 				server.sendTo(ip, port, "WELCOME|Connected to server")
 			end
 
-			logger:log(string.format("[Server] %s:%d -> %s", ip, port, data))
+			logger:log(string.format("%s:%d -> %s", ip, port, data))
 			logger:log(os.date())
 			if data == "SPACE" then
 				server.sendTo(
