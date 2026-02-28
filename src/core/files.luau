@@ -2,7 +2,7 @@ local json = require("@self/json")
 
 local files = {}
 
-function files.files.read(path)
+function files.read(path)
 	local file = io.open(path, "rb")
 	if file then
 		local content = file:read("*a")
@@ -11,7 +11,7 @@ function files.files.read(path)
 	end
 end
 
-function files.files.write(path, content)
+function files.write(path, content)
 	local file = io.open(path, "w")
 	if file then
 		if type(content) == "table" then

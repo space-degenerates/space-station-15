@@ -116,7 +116,7 @@ end
 local TextClass = {}
 TextClass.__index = TextClass
 
-local defaultFont = love.graphics.newFont()
+render.defaultFont = love.graphics.newFont()
 
 ---Create a text object.
 ---@param text string
@@ -132,7 +132,7 @@ function render.text(text, position, layer, parallax, font, color, anchor)
 	local self = setmetatable({}, TextClass)
 
 	self.text = text or ""
-	self.font = font or defaultFont
+	self.font = font or render.defaultFont
 	self.position = position or point.point()
 	self.anchor = anchor or point.point(0.5, 0.5)
 	self.color = color or point.point()

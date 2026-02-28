@@ -162,24 +162,6 @@ function module.newParser()
 		return top
 	end
 
-	function XmlParser:loadFile(xmlFilename, base)
-		if not base then
-			base = system.ResourceDirectory
-		end
-
-		local path = system.pathForFile(xmlFilename, base)
-		local hFile, err = io.open(path, "r")
-
-		if hFile and not err then
-			local xmlText = hFile:read("*a") -- read file content
-			io.close(hFile)
-			return self:ParseXmlText(xmlText), nil
-		else
-			print(err)
-			return nil
-		end
-	end
-
 	return XmlParser
 end
 

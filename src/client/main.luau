@@ -1,28 +1,34 @@
+local point = require("@core/point")
 local render = require("@core/render")
 local socket = require("socket")
+local logging = require("@core/logging")
+
+local logger = logging.logger("Client.Main", logging.colors.blue)
 
 local client = {}
 
 local udp
 local connected = false
 
+local connectionText = render.text("Connecting... (Attempt 1)", point.point(0, 0), 5, 1, render.defaultFont, render.color(1, 1, 1, 1), point.point(.5, .5))
+
 function client.init()
 	udp = socket.udp()
-	udp:settimeout(1)
+	udp:settimeout(0)
 	udp:setpeername("localhost", 22122)
 end
 
 function client.send(message)
-	print(string.format("Sending Message {%s} to server", message))
+	logger:log(string.format("Sending Message {%s} to server", message))
 	udp:send(message .. "\n")
 end
 
 function client.receive()
-	print("Checking for incoming server messages")
+	logger:log("Checking for incoming server messages")
 	local data, msg, _ = udp:receive()
-	print(data, msg)
+	logger:log(data, msg)
 	if data then
-		print(string.format("Server sent data {%s}", data))
+		logger:log(string.format("Server sent data {%s}", data))
 		return data:gsub("\n", "")
 	end
 	return nil
@@ -33,17 +39,9 @@ function client.tryConnect()
 	client.send("CONNECT")
 end
 
-function client.draw()
-	if connected then
-		love.graphics.print("Connected, press space", 10, 10)
-	else
-		love.graphics.print(string.format("Wait for server (attempt %d)", attemptCount), 10, 10)
-	end
-end
-
 function client.keypressed(key)
 	if key == "space" and connected then
-		print("[Client] Space pressed, send this to server")
+		logger:log("Space pressed, send this to server")
 		client.send("SPACE")
 	end
 end
@@ -59,15 +57,21 @@ function client.run()
 	function love.update(dt)
 		local data = client.receive()
 		if data then
-			print(string.format("[Client] Recive: %s", data))
+			logger:log(string.format("Recive: %s", data))
 
 			local prefix, content = data:match("^(%w+)|(.+)$")
 
 			if prefix == "WELCOME" then
 				connected = true
-				print("[Client] Connected to server")
+				logger:log("Connected to server")
+				connectionText.text = "Connected to the server."
 			elseif prefix == "SPACE_CONFIRM" then
-				print(string.format("[Client] %s", content))
+				logger:log(content)
+			elseif prefix == "SERVER_CLOSE" then
+				logger:log(content)
+				connected = false
+				connectionText.text = "Connecting... (Attempt 1)"
+				lastAttempt = socket.gettime()
 			end
 		end
 
@@ -76,6 +80,7 @@ function client.run()
 			if currentTime - lastAttempt >= 2 then
 				client.tryConnect()
 				lastAttempt = currentTime
+				connectionText.text = "Connecting... (Attempt "..attemptCount..")"
 			end
 		end
 
@@ -84,7 +89,6 @@ function client.run()
 
 	function love.draw()
 		love.graphics.clear(0, 0, 0)
-		client.draw()
 		render.draw()
 	end
 

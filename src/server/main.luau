@@ -1,4 +1,7 @@
 local socket = require("socket")
+local logging = require("@core/logging")
+
+local logger = logging.logger("Server.Main", logging.colors.magenta)
 
 local server = {}
 
@@ -7,10 +10,10 @@ local clients = {}
 
 function server.init()
 	udp = socket.udp()
-	udp:settimeout(1)
+	udp:settimeout(0)
 	udp:setsockname("*", 22122)
 
-	print(string.format("[Server] Listening on %s:%d", "127.0.0.1", 22122))
+	logger:log(string.format("[Server] Listening on %s:%d", "127.0.0.1", 22122))
 end
 
 function server.sendTo(ip, port, message)
@@ -19,22 +22,19 @@ end
 
 function love.update()
 	if server.started then
-		print("Updating")
 		local data, ip, port = udp:receivefrom()
-		print(data, ip, port)
 
 		if data then
-			print(data)
 			data = data:gsub("\n", "")
 
 			if not clients[ip] then
 				clients[ip] = port
-				print(string.format("[Server] New client from %s:%d", ip, port))
+				logger:log(string.format("[Server] New client from %s:%d", ip, port))
 				server.sendTo(ip, port, "WELCOME|Connected to server")
 			end
 
-			print(string.format("[Server] %s:%d -> %s", ip, port, data))
-			print(os.date())
+			logger:log(string.format("[Server] %s:%d -> %s", ip, port, data))
+			logger:log(os.date())
 			if data == "SPACE" then
 				server.sendTo(
 					ip,
@@ -51,6 +51,12 @@ function server.run()
 	require("@core/module")()
 	server.init()
 	server.started = true
+end
+
+function love.quit()
+	for ip, port in next, clients do
+		server.sendTo(ip, port, "SERVER_CLOSE|Server shutting off.")
+	end
 end
 
 function love.draw() end
