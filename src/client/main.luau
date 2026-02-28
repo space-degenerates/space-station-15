@@ -9,8 +9,12 @@ local client = {}
 
 local udp
 local connected = false
+local ip
 
 local connectionText = render.text("Connecting... (Attempt 1)", point.point(0, 0), 5, 1, render.defaultFont, render.color(1, 1, 1, 1), point.point(.5, .5))
+
+local is_windows = package.config:sub(1,1) == '\\'
+if is_windows then ip = "localhost" else ip = "127.0.0.1" end
 
 function client.init()
 	udp = socket.udp()
