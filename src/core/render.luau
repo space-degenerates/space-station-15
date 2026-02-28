@@ -1,5 +1,7 @@
-local engine = require("@self/init")
 local point = require("@self/point")
+local xmlparser = require("./xmlparser")
+local files = require("./files")
+local logging = require("./logging")
 local etable = require("@self/table")
 
 ---@class engine.render
@@ -257,7 +259,7 @@ function render.sprite(path, position, layer, resize, anchor, parallax, sheetPat
 
 	local sheet = files.read(sheetPath)
 	assert(sheet, "Sheet " .. sheet .. " failed to load.")
-	local parsed = xmlParser:ParseXmlText(sheet).TextureAtlas.SubTexture
+	local parsed = xmlparser:ParseXmlText(sheet).TextureAtlas.SubTexture
 	self.animations = {}
 	for _, frame in next, parsed do
 		local x = frame["@x"]
@@ -266,10 +268,10 @@ function render.sprite(path, position, layer, resize, anchor, parallax, sheetPat
 		local height = frame["@height"]
 		local frameX = frame["@frameX"]
 		local frameY = frame["@frameY"]
-		local frameW = frame["@frameWidth"]
-		local frameH = frame["@frameHeight"]
+		local _frameW = frame["@frameWidth"]
+		local _frameH = frame["@frameHeight"]
 		local name = frame["@name"]
-		local rotated = frame["@rotated"]
+		local _rotated = frame["@rotated"]
 
 		local num = tonumber(string.sub(name, name:len() - 3, name:len()))
 
@@ -278,8 +280,8 @@ function render.sprite(path, position, layer, resize, anchor, parallax, sheetPat
 		end
 
 		self.animations[name:sub(0, name:len() - 4)][num] = {
-			offset = Point(frameX or 0, frameY or 0),
-			resize = Point(1, 1),
+			offset = point.point(frameX or 0, frameY or 0),
+			resize = point.point(1, 1),
 			quad = love.graphics.newQuad(x, y, width, height, self.image),
 			rotated = false,
 		}
@@ -311,7 +313,7 @@ function SpriteClass:Draw(offset)
 		return
 	end
 	if not offset then
-		offset = Point()
+		offset = point.point()
 	end
 	local _, _, quadSizeX, quadSizeY = self.animations[self.animation][0].quad:getViewport()
 	local quadObj = self.animations[self.animation][self.frame]
@@ -359,7 +361,7 @@ function SpriteClass:Resize(resize)
 	end
 end
 
-function engine.render.draw()
+function render.draw()
 	table.sort(Drawables, function(a, b)
 		if a.layer < b.layer then
 			return true
@@ -367,7 +369,7 @@ function engine.render.draw()
 			return false
 		end
 	end)
-	local screenSize = Point(love.graphics.getWidth(), love.graphics.getHeight())
+	local screenSize = point.point(love.graphics.getWidth(), love.graphics.getHeight())
 
 	for _, drawable in next, Drawables do
 		if drawable.body then
@@ -381,7 +383,7 @@ function engine.render.draw()
 			--     drawable.body:setAngle(drawable.rotation)
 			-- end
 
-			if engine.render.physdebug then
+			if render.physdebug then
 				if drawable.shape:getType() == "polygon" then
 					love.graphics.setColor(0.20, 0.20, 0.20) -- set the drawing color to grey for the blocks
 					love.graphics.polygon("fill", drawable.body:getWorldPoints(drawable.shape:getPoints()))
@@ -389,17 +391,17 @@ function engine.render.draw()
 				end
 			end
 		end
-		local offset = Point(
-			screenSize.x / 2 - camera.position.x * (drawable.parallax or 1),
-			screenSize.y / 2 - camera.position.y * (drawable.parallax or 1)
+		local offset = point.point(
+			screenSize.x / 2 - render.camera.position.x * (drawable.parallax or 1),
+			screenSize.y / 2 - render.camera.position.y * (drawable.parallax or 1)
 		)
 
 		drawable:Draw(offset)
 	end
 end
 
-function engine.render.update(delta)
-	engine.render.screenSize = Point(love.graphics:getWidth(), love.graphics:getHeight())
+function render.update(delta)
+	render.screenSize = point.point(love.graphics:getWidth(), love.graphics:getHeight())
 
 	for _, drawable in next, Drawables do
 		if drawable.Update then
@@ -411,8 +413,5 @@ end
 ---[[
 ---Leaving this for table.findofclass and other stuff like this that needs you to verify the class
 ---]]
-engine.classes.ImageClass = ImageClass
-engine.classes.RectangleClass = RectangleClass
-engine.classes.TextClass = TextClass
-engine.classes.ColorClass = ColorClass
-engine.classes.SpriteClass = SpriteClass
+
+return render

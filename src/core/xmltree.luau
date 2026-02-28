@@ -166,6 +166,4 @@ end
 tree.cdata = tree.text
 tree.__index = tree
 
-engine.tree = tree
-
 return tree

@@ -18,10 +18,10 @@ local module = {}
 ---------------------------------------------------------------------------------
 ---------------------------------------------------------------------------------
 
-local function newNode(name)
+local function newNode(nodeName)
 	local node = {}
 	node.___value = nil
-	node.___name = name
+	node.___name = nodeName
 	node.___children = {}
 	node.___props = {}
 
@@ -82,7 +82,7 @@ local function newNode(name)
 end
 
 function module.newParser()
-	XmlParser = {}
+	local XmlParser = {}
 
 	function XmlParser:ToXmlString(value)
 		value = string.gsub(value, "&", "&amp;") -- '&' -> "&amp;"
@@ -111,7 +111,7 @@ function module.newParser()
 	end
 
 	function XmlParser:ParseArgs(node, s)
-		string.gsub(s, "(%w+)=([\"'])(.-)%2", function(w, _, a)
+		local _ = string.gsub(s, "(%w+)=([\"'])(.-)%2", function(w, _, a)
 			node:addProperty(w, self:FromXmlString(a))
 		end)
 	end
@@ -155,7 +155,7 @@ function module.newParser()
 			end
 			i = j + 1
 		end
-		local text = string.sub(xmlText, i)
+		-- local text = string.sub(xmlText, i)
 		if #stack > 1 then
 			error("XmlParser: unclosed " .. stack[#stack]:name())
 		end

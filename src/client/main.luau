@@ -1,3 +1,4 @@
+local render = require("@core/render")
 local socket = require("socket")
 
 local client = {}
@@ -7,36 +8,24 @@ local connected = false
 
 function client.init()
 	udp = socket.udp()
-	udp:setsockname("*", 22123)
-	udp:settimeout(0)
+	udp:settimeout(1)
+	udp:setpeername("localhost", 22122)
 end
 
 function client.send(message)
-	udp:sendto(message .. "\n", "127.0.0.1", 22122)
+	print(string.format("Sending Message {%s} to server", message))
+	udp:send(message .. "\n")
 end
 
 function client.receive()
-	local data,_,_ = udp:receivefrom()
+	print("Checking for incoming server messages")
+	local data, msg, _ = udp:receive()
+	print(data, msg)
 	if data then
+		print(string.format("Server sent data {%s}", data))
 		return data:gsub("\n", "")
 	end
 	return nil
-end
-
-function client.update(dt)
-	local data = client.receive()
-	if data then
-		print(string.format("[Client] Recive: %s", data))
-		
-		local prefix, content = data:match("^(%w+)|(.+)$")
-		
-		if prefix == "WELCOME" then
-			connected = true
-			print("[Client] Connected to server")
-		elseif prefix == "SPACE_CONFIRM" then
-			print(string.format("[Client] %s", content))
-		end
-	end
 end
 local attemptCount = 0
 function client.tryConnect()
@@ -63,12 +52,25 @@ function client.run()
 	require("@core/module")()
 	client.init()
 	local lastAttempt = 0
-	
+
 	lastAttempt = socket.gettime()
 	client.tryConnect()
-	
+
 	function love.update(dt)
-		client.update(dt)
+		local data = client.receive()
+		if data then
+			print(string.format("[Client] Recive: %s", data))
+
+			local prefix, content = data:match("^(%w+)|(.+)$")
+
+			if prefix == "WELCOME" then
+				connected = true
+				print("[Client] Connected to server")
+			elseif prefix == "SPACE_CONFIRM" then
+				print(string.format("[Client] %s", content))
+			end
+		end
+
 		if not connected then
 			local currentTime = socket.gettime()
 			if currentTime - lastAttempt >= 2 then
@@ -76,13 +78,16 @@ function client.run()
 				lastAttempt = currentTime
 			end
 		end
+
+		render.update(dt)
 	end
-	
+
 	function love.draw()
 		love.graphics.clear(0, 0, 0)
 		client.draw()
+		render.draw()
 	end
-	
+
 	function love.keypressed(key)
 		client.keypressed(key)
 	end
