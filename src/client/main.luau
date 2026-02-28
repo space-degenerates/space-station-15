@@ -15,7 +15,7 @@ local connectionText = render.text("Connecting... (Attempt 1)", point.point(0, 0
 function client.init()
 	udp = socket.udp()
 	udp:settimeout(0)
-	udp:setpeername("localhost", 22122)
+	udp:setpeername("127.0.0.1", 22122)
 end
 
 function client.send(message)
@@ -24,9 +24,9 @@ function client.send(message)
 end
 
 function client.receive()
-	logger:log("Checking for incoming server messages")
-	local data, msg, _ = udp:receive()
-	logger:log(data, msg)
+	--logger:log("Checking for incoming server messages")
+	local data, _, _ = udp:receive()
+	--logger:log(data, msg)
 	if data then
 		logger:log(string.format("Server sent data {%s}", data))
 		return data:gsub("\n", "")
