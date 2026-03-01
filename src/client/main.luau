@@ -9,17 +9,14 @@ local client = {}
 
 local udp
 local connected = false
-local ip
 
 local connectionText = render.text("Connecting... (Attempt 1)", point.point(0, 0), 5, 1, render.defaultFont, render.color(1, 1, 1, 1), point.point(.5, .5))
 
-local is_windows = package.config:sub(1,1) == '\\'
-if is_windows then ip = "localhost" else ip = "127.0.0.1" end
-
-function client.init()
+function client.init(ip)
+	logger:log(ip)
 	udp = socket.udp()
 	udp:settimeout(0)
-	udp:setpeername("127.0.0.1", 22122)
+	udp:setpeername(ip, 22122)
 end
 
 function client.send(message)
@@ -28,9 +25,7 @@ function client.send(message)
 end
 
 function client.receive()
-	--logger:log("Checking for incoming server messages")
 	local data, _, _ = udp:receive()
-	--logger:log(data, msg)
 	if data then
 		logger:log(string.format("Server sent data {%s}", data))
 		return data:gsub("\n", "")
@@ -50,9 +45,8 @@ function client.keypressed(key)
 	end
 end
 
-function client.run()
-	require("@core/module")()
-	client.init()
+function client.run(ip)
+	client.init(ip)
 	local lastAttempt = 0
 
 	lastAttempt = socket.gettime()
@@ -63,16 +57,17 @@ function client.run()
 		if data then
 			logger:log(string.format("Recive: %s", data))
 
-			local prefix, content = data:match("^(%w+)|(.+)$")
+			data = data:split("|")
+			local prefix = data[1]
 
 			if prefix == "WELCOME" then
 				connected = true
 				logger:log("Connected to server")
 				connectionText.text = "Connected to the server."
 			elseif prefix == "SPACE_CONFIRM" then
-				logger:log(content)
+				logger:log(data)
 			elseif prefix == "SERVER_CLOSE" then
-				logger:log(content)
+				logger:log(data)
 				connected = false
 				connectionText.text = "Connecting... (Attempt 1)"
 				lastAttempt = socket.gettime()
