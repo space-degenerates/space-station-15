@@ -1,7 +1,4 @@
 local json = require("@self/json")
-local logging = require("@core/logging")
-
-local logger = logging.logger("Core.Files", logging.colors.cyan)
 
 local files = {}
 
@@ -12,8 +9,6 @@ function files.read(path)
 		file:close()
 		return content
 	end
-	logger:warn(string.format("File at path [%s] does not exist", path))
-	return
 end
 
 function files.write(path, content)

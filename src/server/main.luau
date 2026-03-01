@@ -1,7 +1,5 @@
 local socket = require("socket")
 local logging = require("@core/logging")
-local json = require("../../.build/core/json")
-local point = require("../../.build/core/point")
 
 local logger = logging.logger("Server.Main", logging.colors.magenta)
 
@@ -9,8 +7,6 @@ local server = {}
 
 local udp
 local clients = {}
-
-local positions = {}
 
 function server.init()
 	udp = socket.udp()
@@ -29,29 +25,22 @@ function love.update()
 		local data, ip, port = udp:receivefrom()
 
 		if data then
-			data = data:split("|")
+			data = data:gsub("\n", "")
 
 			if not clients[ip] then
 				clients[ip] = port
-				positions[ip] = point.point()
 				logger:log(string.format("New client from %s:%d", ip, port))
 				server.sendTo(ip, port, "WELCOME|Connected to server")
 			end
 
-			logger:log(string.format("%s:%d -> %s", ip, port, logging.dump(data)))
-			if data[1] == "SPACE" then
+			logger:log(string.format("%s:%d -> %s", ip, port, data))
+			logger:log(os.date())
+			if data == "SPACE" then
 				server.sendTo(
 					ip,
 					port,
 					"SPACE_CONFIRM|Client " .. ip .. ":" .. port .. " pressed SPACE at " .. os.date("%H:%M:%S")
 				)
-			elseif data[1] == "MOVE" then
-				positions[ip] = point.point(data[2], data[3])
-			elseif data[1] == "UPDATE" then
-				local message = "UPDATE|"
-				for ip, position in next, positions do
-					message = message..ip.."="..position.."|"
-				end
 			end
 		end
 		socket.sleep(0.1)

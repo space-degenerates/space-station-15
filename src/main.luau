@@ -2,19 +2,14 @@
 
 -- Running server uses the --server argument
 
+local globals = require("@core/game")
 local server = require("@server/main")
 local client = require("@client/main")
 
-if arg[2] == "--noexec" then
-	if arg[3] == "--server" then
-		server.run()
-	else
-		client.run(arg[3])
-	end
+if arg[1] == "--server" or arg[2] == "--server" then
+	server.run()
+	globals.server = true
 else
-	if arg[1] == "--server" then
-		server.run()
-	else
-		client.run(arg[1])
-	end
+	client.run()
+	globals.server = false
 end
