@@ -9,17 +9,13 @@ local client = {}
 
 local udp
 local connected = false
-local ip
 
 local connectionText = render.text("Connecting... (Attempt 1)", point.point(0, 0), 5, 1, render.defaultFont, render.color(1, 1, 1, 1), point.point(.5, .5))
 
-local is_windows = package.config:sub(1,1) == '\\'
-if is_windows then ip = "localhost" else ip = "127.0.0.1" end
-
-function client.init()
+function client.init(ip)
 	udp = socket.udp()
-	udp:settimeout(0)
-	udp:setpeername("127.0.0.1", 22122)
+	udp:settimeout(.1)
+	udp:setpeername(ip, 22122)
 end
 
 function client.send(message)
@@ -43,16 +39,8 @@ function client.tryConnect()
 	client.send("CONNECT")
 end
 
-function client.keypressed(key)
-	if key == "space" and connected then
-		logger:log("Space pressed, send this to server")
-		client.send("SPACE")
-	end
-end
-
-function client.run()
-	require("@core/module")()
-	client.init()
+function client.run(ip)
+	client.init(ip)
 	local lastAttempt = 0
 
 	lastAttempt = socket.gettime()
@@ -97,7 +85,11 @@ function client.run()
 	end
 
 	function love.keypressed(key)
-		client.keypressed(key)
+		logger:log(key.." pressed")
+		if key == "space" and connected then
+			logger:log("Space pressed, send this to server")
+			client.send("SPACE")
+		end
 	end
 end
 

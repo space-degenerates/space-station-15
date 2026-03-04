@@ -10,7 +10,7 @@ local clients = {}
 
 function server.init()
 	udp = socket.udp()
-	udp:settimeout(0)
+	udp:settimeout(.1)
 	udp:setsockname("*", 22122)
 
 	logger:log(string.format("Listening on %s:%d", "127.0.0.1", 22122))
