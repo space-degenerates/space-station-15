@@ -26,7 +26,6 @@ end
 function client.receive()
 	--logger:log("Checking for incoming server messages")
 	local data, _, _ = udp:receive()
-	--logger:log(data, msg)
 	if data then
 		logger:log(string.format("Server sent data {%s}", data))
 		return data:gsub("\n", "")
