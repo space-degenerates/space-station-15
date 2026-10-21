@@ -186,7 +186,7 @@ function json.parse(str, pos, end_delim)
 		local obj, key, delim_found = {}, true, true
 		pos = pos + 1
 		while true do
-			key, pos = json.parse(str, pos, "}")
+            key, pos = json.parse(str, pos, "}")
 			if key == nil then
 				return obj, pos
 			end

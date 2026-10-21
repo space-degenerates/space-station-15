@@ -1,36 +1,41 @@
-local point = {}
+local vector = {}
 
----@class engine.point
+---@class engine.vector2
 ---@field x number
 ---@field y number
-local PointClass = {}
-PointClass.__index = PointClass
+local VectorClass = {}
+VectorClass.__index = VectorClass
 
 ---@param x number?
 ---@param y number?
----@return engine.point
-function point.point(x, y)
-	---@class engine.point
-	local self = setmetatable({}, PointClass)
+---@return engine.vector2
+function vector.vector(x, y)
+	---@class engine.vector2
+	local self = setmetatable({}, VectorClass)
 	self.x = x or 0
-	self.y = y or 0
+    self.y = y or 0
+	self.magnitude = math.sqrt(self.x^2 + self.y^2)
 
 	return self
 end
 
 ---Multiply Point by a point or a number
----@param target number|engine.point
----@return engine.point
-function PointClass:Mul(target)
-	-- if engine.isOfClass(target, PointClass) then
-	return point.point(self.x * target.x, self.y * target.y)
-	-- elseif classes.isOfClass(point, "number") then
-	-- return Point(self.x * target, self.y * target)
-	-- else
-	-- return self
-	-- end
+---@param target number|engine.vector2
+---@return engine.vector2
+function VectorClass:Mul(target)
+    return vector.vector(self.x * target.x, self.y * target.y)
 end
 
-return point
+---@param target engine.vector2
+---@return engine.vector2
+function VectorClass:Sub(target)
+    return vector.vector(self.x - target.x, self.y - target.y)
+end
 
--- engine.classes.PointClass = PointClass
+---@param target engine.vector2
+---@return engine.vector2
+function VectorClass:Sum(target)
+    return vector.vector(self.x + target.x, self.y + target.y)
+end
+
+return vector
