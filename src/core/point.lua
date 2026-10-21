@@ -19,7 +19,7 @@ function point.point(x, y)
 end
 
 ---Multiply Point by a point or a number
----@param point number|engine.point
+---@param target number|engine.point
 ---@return engine.point
 function PointClass:Mul(target)
 	-- if engine.isOfClass(target, PointClass) then
