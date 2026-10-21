@@ -7,14 +7,14 @@ local client = require("client.main")
 
 if arg[2] == "--noexec" then
 	if arg[3] == "--server" then
-		server.run()
+		server:run()
 	else
-		client.run(arg[3])
+		client:run(arg[3])
 	end
 else
 	if arg[1] == "--server" then
-		server.run()
+		server:run()
 	else
-		client.run(arg[1])
+		client:run(arg[1])
 	end
 end
