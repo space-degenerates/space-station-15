@@ -13,7 +13,7 @@ local debug
 function server:init()
 	udp = socket.udp()
 	udp:settimeout(.1)
-	udp:setsockname("*", 22122)
+	udp:setsockname("0.0.0.0", 22122)
 
 	logger:log(string.format("Listening on %s:%d", "127.0.0.1", 22122))
 end
@@ -54,7 +54,7 @@ function love.update(delta)
 				end
 				logger:log(string.format("New client from %s:%d", ip, port))
 				server:sendTo(ip, port, "WELCOME|Connected to server")
-				server:sendAllExcept(ip, port, "PLAYER_EVENT|Client " .. ip .. ":" .. port .. " connected to the server")
+				server:sendAllExcept(ip, port, "PLAYER_EVENT|Client  connected to the server")
 			end
 
 			if debug then logger:log(string.format("%s:%d -> %s", ip, port, data)) end
@@ -83,7 +83,7 @@ end
 
 function love.quit()
 	for ip, port in next, clients do
-		server:sendTo(ip, port, "SERVER_CLOSE|Server shutting off.")
+		server:sendAll("SERVER_CLOSE|Server shutting off.")
 	end
 end
 
