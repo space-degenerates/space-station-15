@@ -1,7 +1,7 @@
-local point = require("@core/point")
-local render = require("@core/render")
+local point = require("core.point")
+local render = require("core.render")
 local socket = require("socket")
-local logging = require("@core/logging")
+local logging = require("core.logging")
 
 local logger = logging.logger("Client.Main", logging.colors.blue)
 

@@ -1,4 +1,4 @@
-local json = require("@self/json")
+local json = require("core.json")
 
 local files = {}
 

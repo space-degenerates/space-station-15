@@ -1,4 +1,4 @@
-local engine = require("@self/init")
+local engine = require("core.init")
 
 local etable = {}
 
