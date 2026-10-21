@@ -27,7 +27,7 @@ function logging.dump(o)
 	end
 end
 
-function logging.gettime(): string
+function logging.gettime()
 	return os.date("%Y-%m-%d %H:%M:%S")
 end
 

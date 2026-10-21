@@ -1,7 +1,0 @@
-{
-	"aliases": {
-		"client": "src/client",
-		"server": "src/server",
-		"core": "src/core"
-	}
-}

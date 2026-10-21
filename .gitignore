@@ -13,6 +13,8 @@ profile.svg
 # Time trace
 trace.json
 
+*.love
+
 rokit.exe
 kaledis.exe
 selene.exe

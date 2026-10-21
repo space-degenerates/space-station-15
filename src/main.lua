@@ -2,8 +2,8 @@
 
 -- Running server uses the --server argument
 
-local server = require("@server/main")
-local client = require("@client/main")
+local server = require("server.main")
+local client = require("client.main")
 
 if arg[2] == "--noexec" then
 	if arg[3] == "--server" then
