@@ -8,7 +8,13 @@ local server = {}
 local udp
 local clients = {}
 
+<<<<<<< HEAD
 function server:init()
+=======
+local debug
+
+function server.init()
+>>>>>>> main
 	udp = socket.udp()
 	udp:settimeout(.1)
 	udp:setsockname("*", 22122)
@@ -36,8 +42,8 @@ function love.update(delta)
 				server:sendTo(ip, port, "WELCOME|Connected to server")
 			end
 
-			logger:log(string.format("%s:%d -> %s", ip, port, data))
-			logger:log(os.date())
+			if debug then logger:log(string.format("%s:%d -> %s", ip, port, data)) end
+			if debug then logger:log(os.date()) end
 			if data == "SPACE" then
 				server:sendTo(
 					ip,
@@ -56,9 +62,16 @@ function love.update(delta)
 	end
 end
 
+<<<<<<< HEAD
 function server.run()
 	--require("@core/module")()
 	server:init()
+=======
+function server.run(debugwegot)
+    --require("@core/module")()
+	debug = (debugwegot == "--debug") and true or false
+	server.init()
+>>>>>>> main
 	server.started = true
 end
 
