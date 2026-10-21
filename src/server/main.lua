@@ -82,9 +82,7 @@ function server:run(debugwegot)
 end
 
 function love.quit()
-	for ip, port in next, clients do
-		server:sendAll("SERVER_CLOSE|Server shutting off.")
-	end
+    server:sendAll("SERVER_CLOSE|Server shutting off.")
 end
 
 function love.draw() end
