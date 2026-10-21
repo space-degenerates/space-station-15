@@ -1,5 +1,5 @@
 local socket = require("socket")
-local logging = require("@core/logging")
+local logging = require("core.logging")
 
 local logger = logging.logger("Server.Main", logging.colors.magenta)
 
@@ -48,7 +48,7 @@ function love.update()
 end
 
 function server.run()
-	require("@core/module")()
+	--require("@core/module")()
 	server.init()
 	server.started = true
 end

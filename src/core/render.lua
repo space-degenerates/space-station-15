@@ -1,8 +1,8 @@
-local point = require("@self/point")
-local xmlparser = require("./xmlparser")
-local files = require("./files")
-local logging = require("./logging")
-local etable = require("@self/table")
+local point = require("core.point")
+local xmlparser = require("core.xmlparser")
+local files = require("core.files")
+local logging = require("core.logging")
+local etable = require("core.table")
 
 ---@class engine.render
 ---Global functions for render classes.
