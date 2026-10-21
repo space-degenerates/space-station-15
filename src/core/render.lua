@@ -273,18 +273,19 @@ function render.sprite(path, position, layer, resize, anchor, parallax, sheetPat
 		local name = frame["@name"]
 		local _rotated = frame["@rotated"]
 
-		local num = tonumber(string.sub(name, name:len() - 3, name:len()))
+        local num = tonumber(string.sub(name, name:len() - 3, name:len()))
+		if num then
+            if not self.animations[name:sub(0, name:len() - 4)] then
+                self.animations[name:sub(0, name:len() - 4)] = {}
+            end
 
-		if not self.animations[name:sub(0, name:len() - 4)] then
-			self.animations[name:sub(0, name:len() - 4)] = {}
+    		self.animations[name:sub(0, name:len() - 4)][num] = {
+    			offset = point.point(frameX or 0, frameY or 0),
+    			resize = point.point(1, 1),
+    			quad = love.graphics.newQuad(x, y, width, height, self.image),
+    			rotated = false,
+    		}
 		end
-
-		self.animations[name:sub(0, name:len() - 4)][num] = {
-			offset = point.point(frameX or 0, frameY or 0),
-			resize = point.point(1, 1),
-			quad = love.graphics.newQuad(x, y, width, height, self.image),
-			rotated = false,
-		}
 	end
 
 	Drawables[#Drawables + 1] = self
