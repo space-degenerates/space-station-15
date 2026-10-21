@@ -1,7 +1,7 @@
 {
     "$schema": "https://raw.githubusercontent.com/LuaLS/vscode-lua/master/setting/schema.json",
     "runtime.version": "LuaJIT",
-    "workspace.library": ["../love2d-luacats"],
+    "workspace.library": ["./love2d-luacats"],
     "diagnostics.disable": ["duplicate-set-field"],
     "runtime.special": {
       "love.filesystem.load": "loadfile"
