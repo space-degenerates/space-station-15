@@ -1,0 +1,3 @@
+[submodule "love2d-luacats"]
+	path = love2d-luacats
+	url = https://github.com/LuaCATS/love2d
