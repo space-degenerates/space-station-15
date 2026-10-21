@@ -8,13 +8,9 @@ local server = {}
 local udp
 local clients = {}
 
-<<<<<<< HEAD
-function server:init()
-=======
 local debug
 
-function server.init()
->>>>>>> main
+function server:init()
 	udp = socket.udp()
 	udp:settimeout(.1)
 	udp:setsockname("*", 22122)
@@ -23,7 +19,25 @@ function server.init()
 end
 
 function server:sendTo(ip, port, message)
-	udp:sendto(message .. "\n", ip, port)
+    udp:sendto(message .. "\n", ip, port)
+end
+
+function server:sendAll(message)
+    for ip, ports in next, clients do
+        for port, data in next, ports do
+            udp:sendto(message .. "\n", ip, port)
+        end
+    end
+end
+
+function server:sendAllExcept(exIp, exPort, message)
+    for ip, ports in next, clients do
+        for port, data in next, ports do
+            if ip ~= exIp and port ~= exPort then
+                udp:sendto(message .. "\n", ip, port)
+            end
+        end
+    end
 end
 
 function love.update(delta)
@@ -40,38 +54,30 @@ function love.update(delta)
 				end
 				logger:log(string.format("New client from %s:%d", ip, port))
 				server:sendTo(ip, port, "WELCOME|Connected to server")
+				server:sendAllExcept(ip, port, "PLAYER_EVENT|Client " .. ip .. ":" .. port .. " connected to the server")
 			end
 
 			if debug then logger:log(string.format("%s:%d -> %s", ip, port, data)) end
 			if debug then logger:log(os.date()) end
 			if data == "SPACE" then
-				server:sendTo(
-					ip,
-					port,
-					"SPACE_CONFIRM|Client " .. ip .. ":" .. port .. " pressed SPACE at " .. os.date("%H:%M:%S")
-				)
+				server:sendAll("SPACE_CONFIRM|Client " .. ip .. ":" .. port .. " pressed SPACE at " .. os.date("%H:%M:%S"))
 			elseif data == "EXIT" then
                 clients[ip][port] = nil
                 if #clients[ip] == 0 then
                     clients[ip] = nil
                 end
-				logger:log(string.format("%s%d has left the server", ip, port))
+                server:sendAll("PLAYER_EVENT|Client " .. ip .. ":" .. port .. " left the server")
+                logger:log(string.format("%s%d has left the server", ip, port))
 			end
 		end
 		socket.sleep(0.1)
 	end
 end
 
-<<<<<<< HEAD
-function server.run()
+function server:run(debugwegot)
 	--require("@core/module")()
-	server:init()
-=======
-function server.run(debugwegot)
-    --require("@core/module")()
 	debug = (debugwegot == "--debug") and true or false
-	server.init()
->>>>>>> main
+	server:init()
 	server.started = true
 end
 
