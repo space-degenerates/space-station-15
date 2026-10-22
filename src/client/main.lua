@@ -1,8 +1,11 @@
-local point = require("core.point")
 local socket = require("socket")
 local logging = require("core.logging")
 local packets = require("client.packets")
 local utf8 = require("utf8")
+local image= require("client.render.image")
+local vector2 = require("core.vector2")
+local render = require("client.render")
+local text   = require("client.render.text")
 
 local logger = logging.logger("Client.Main", logging.colors.blue)
 
@@ -13,8 +16,8 @@ client.connected = false
 local username
 
 client.players = {}
-local x, y = .5, .5
 
+local character,tag
 local debug
 
 local font = love.graphics.getFont()
@@ -88,18 +91,29 @@ function client:run(ip, usernameclient, debugwegot)
         if client.bannedAt then return end
 
         if client.connected then
+            if not client.loaded then
+                character = image.new("resources/CatTest2.png", vector2.new(0, 0))
+                tag = text.new(username, vector2.new(0, -15))
+
+                client.loaded = true
+            end
+
             local dx = (love.keyboard.isDown("d", "right") and 1 or 0) - (love.keyboard.isDown("a", "left") and 1 or 0)
             local dy = (love.keyboard.isDown("s", "down") and 1 or 0) - (love.keyboard.isDown("w", "up") and 1 or 0)
 
             if dx ~= 0 or dy ~= 0 then
-                x = math.min(1, math.max(0, x + dx * dt * .5))
-                y = math.min(1, math.max(0, y + dy * dt * .5))
-                client:send(string.format("MOVE|%f|%f", x, y))
+                character.x = character.x + dx * dt * 50
+                character.y = character.y + dy * dt * 50
+                tag.x = character.x
+                tag.y = character.y - 15
+                client:send(string.format("MOVE|%f|%f", character.x, character.y))
             end
         elseif socket.gettime() - client.lastAttempt >= 2 then
             client:tryConnect()
             client.lastAttempt = socket.gettime()
         end
+
+        render:update(dt)
     end
 
     function love.draw()
@@ -122,13 +136,16 @@ function client:run(ip, usernameclient, debugwegot)
             return
         end
 
-        love.graphics.rectangle("fill", x * (w - 20), y * (h - 20), 20, 20)
-        love.graphics.print(username, x * (w - 20) + 10 - font:getWidth(username) / 2, y * (h - 20) - font:getHeight())
+        -- character:Draw()
+        -- love.graphics.rectangle("fill", x * (w - 20), y * (h - 20), 20, 20)
+        -- love.graphics.print(username, x * (w - 20) + 10 - font:getWidth(username) / 2, y * (h - 20) - font:getHeight())
 
-        for name, p in next, client.players do
-            love.graphics.rectangle("fill", p.x * (w - 20), p.y * (h - 20), 20, 20)
-            love.graphics.print(name, p.x * (w - 20) + 10 - font:getWidth(name) / 2, p.y * (h - 20) - font:getHeight())
-        end
+        -- for name, p in next, client.players do
+        --     p.character:Draw()
+        --     --love.graphics.rectangle("fill", p.x * (w - 20), p.y * (h - 20), 20, 20)
+        --     love.graphics.print(name, p.x * (w - 20) + 10 - font:getWidth(name) / 2, p.y * (h - 20) - font:getHeight())
+        -- end
+        render:draw()
     end
 
     function love.keypressed(key)
