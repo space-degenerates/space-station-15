@@ -95,10 +95,13 @@ function client:run(ip, usernameclient, debugwegot)
 
         if client.connected then
             if not client.loaded then
-                character = entities.spawn("player", client.spawnX or 0, client.spawnY or 0)
+                local spawnX = client.spawnX or 0
+                local spawnY = client.spawnY or 0
+
+                character = entities.spawn("player", spawnX, spawnY)
                 client.character = character
                 table.insert(render.objects, character)
-                tag = text.new(username, vector2.new(0, -15))
+                tag = text.new(username, vector2.new(spawnX, spawnY - 15))
                 client.tag = tag
 
                 client.loaded = true
