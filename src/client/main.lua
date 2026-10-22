@@ -2,8 +2,10 @@ local socket = require("socket")
 local logging = require("core.logging")
 local packets = require("client.packets")
 local utf8 = require("utf8")
-local image= require("client.render.image")
+local entities = require("core.entities")
+local collider = require("core.components.collider")
 local vector2 = require("core.vector2")
+local emath   = require("core.math")
 local render = require("client.render")
 local text   = require("client.render.text")
 
@@ -20,7 +22,8 @@ client.players = {}
 local character,tag
 local debug
 
-local font = love.graphics.getFont()
+local font       = love.graphics.getFont()
+love.graphics.setDefaultFilter("nearest")
 
 function client:init(ip)
 	udp = socket.udp()
@@ -92,22 +95,49 @@ function client:run(ip, usernameclient, debugwegot)
 
         if client.connected then
             if not client.loaded then
-                character = image.new("resources/CatTest2.png", vector2.new(0, 0))
-                tag = text.new(username, vector2.new(0, -15))
+                local spawnX = client.spawnX or 0
+                local spawnY = client.spawnY or 0
+
+                character = entities.spawn("player", spawnX, spawnY)
+                client.character = character
+                table.insert(render.objects, character)
+                tag = text.new(username, vector2.new(spawnX, spawnY - 15))
+                client.tag = tag
 
                 client.loaded = true
             end
+
+            local transform = character:get("transform")
+            local sprite = character:get("sprite")
 
             local dx = (love.keyboard.isDown("d", "right") and 1 or 0) - (love.keyboard.isDown("a", "left") and 1 or 0)
             local dy = (love.keyboard.isDown("s", "down") and 1 or 0) - (love.keyboard.isDown("w", "up") and 1 or 0)
 
             if dx ~= 0 or dy ~= 0 then
-                character.x = character.x + dx * dt * 50
-                character.y = character.y + dy * dt * 50
-                tag.x = character.x
-                tag.y = character.y - 15
-                client:send(string.format("MOVE|%f|%f", character.x, character.y))
+                local nx = transform.pos.x + dx * dt * 50
+                if not collider.blocked(character, nx, transform.pos.y, render.objects) then
+                    transform.pos.x = nx
+                end
+
+                local ny = transform.pos.y + dy * dt * 50
+                if not collider.blocked(character, transform.pos.x, ny, render.objects) then
+                    transform.pos.y = ny
+                end
+
+                tag.x = transform.pos.x
+                tag.y = transform.pos.y - 15
+
+                if dx > 0 then sprite.direction = "east"
+                elseif dx < 0 then sprite.direction = "west"
+                elseif dy > 0 then sprite.direction = "south"
+                elseif dy < 0 then sprite.direction = "north" end
+
+                client:send(string.format("MOVE|%f|%f|%s", transform.pos.x, transform.pos.y, sprite.direction))
             end
+
+            local t = math.min(1, dt * 8)
+            render.x = emath.lerp(render.x, transform.pos.x, t)
+            render.y = emath.lerp(render.y, transform.pos.y, t)
         elseif socket.gettime() - client.lastAttempt >= 2 then
             client:tryConnect()
             client.lastAttempt = socket.gettime()
