@@ -3,7 +3,7 @@ return function(content, ip, port, server, clients)
 	if not player then return end
 
 	local x, y = content:match("^(.-)|(.*)$")
-	player.x = math.min(1, math.max(0, tonumber(x) or player.x))
-	player.y = math.min(1, math.max(0, tonumber(y) or player.y))
+	player.x = x
+	player.y = y
 	server:sendAllExcept(ip, port, string.format("POS|%s|%f|%f", player.name, player.x, player.y))
 end
