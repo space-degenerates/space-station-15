@@ -11,7 +11,7 @@ end
 function Collider.blocked(entity, x, y, list)
 	local c = entity:get("collider")
 	for _, obj in ipairs(list) do
-		if obj.get and obj ~= entity then
+		if obj.get and obj.tile then
 			local wall = obj:get("collider")
 			if wall then
 				local t = obj:get("transform")
