@@ -1,3 +1,5 @@
+local map = require("server.map")
+
 return function(username, ip, port, server, clients, logger)
     if server.banned and server.banned[ip] then
     	server:sendTo(ip, port, "BANNED|You are banned from this server")
@@ -20,12 +22,16 @@ return function(username, ip, port, server, clients, logger)
 		end
 
 		clients[ip] = clients[ip] or {}
-		clients[ip][port] = {name = username, x = .5, y = .5, dir = "south", proto = "player"}
+		local x, y = map.pickSpawn(clients)
+		clients[ip][port] = {name = username, x = x, y = y, dir = "south", proto = "player"}
 
 		logger:log(string.format("%s connected from %s:%d", username, ip, port))
 		server:sendAllExcept(ip, port, "PLAYER_EVENT|" .. username .. " connected to the server")
-		server:sendAllExcept(ip, port, string.format("JOIN|%s|.5|.5|south|player", username))
+		server:sendAllExcept(ip, port, string.format("JOIN|%s|%d|%d|south|player", username, x, y))
 	end
 
+	local player = clients[ip][port]
+	server:sendTo(ip, port, "MAP|" .. map.serialize())
+	server:sendTo(ip, port, "TELEPORT|" .. player.x .. "|" .. player.y)
 	server:sendTo(ip, port, "WELCOME|Connected to server")
 end

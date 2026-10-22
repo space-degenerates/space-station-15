@@ -2,6 +2,7 @@ local socket = require("socket")
 local logging = require("core.logging")
 local commands = require("server.commands")
 local packets = require("server.packets")
+local map = require("server.map")
 
 local logger = logging.logger("Server.Main", logging.colors.magenta)
 
@@ -17,6 +18,8 @@ function server:init()
 	udp = socket.udp()
 	udp:settimeout(0)
     udp:setsockname("0.0.0.0", 22122)
+
+    map.load("station")
 
     love.thread.newThread("server/consolereader.lua"):start()
     consoleChannel = love.thread.getChannel("console")

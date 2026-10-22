@@ -3,6 +3,7 @@ local logging = require("core.logging")
 local packets = require("client.packets")
 local utf8 = require("utf8")
 local entities = require("core.entities")
+local collider = require("core.components.collider")
 local vector2 = require("core.vector2")
 local emath   = require("core.math")
 local render = require("client.render")
@@ -94,9 +95,11 @@ function client:run(ip, usernameclient, debugwegot)
 
         if client.connected then
             if not client.loaded then
-                character = entities.spawn("player", 0, 0)
+                character = entities.spawn("player", client.spawnX or 0, client.spawnY or 0)
+                client.character = character
                 table.insert(render.objects, character)
                 tag = text.new(username, vector2.new(0, -15))
+                client.tag = tag
 
                 client.loaded = true
             end
@@ -108,8 +111,16 @@ function client:run(ip, usernameclient, debugwegot)
             local dy = (love.keyboard.isDown("s", "down") and 1 or 0) - (love.keyboard.isDown("w", "up") and 1 or 0)
 
             if dx ~= 0 or dy ~= 0 then
-                transform.x = transform.x + dx * dt * 50
-                transform.y = transform.y + dy * dt * 50
+                local nx = transform.x + dx * dt * 50
+                if not collider.blocked(character, nx, transform.y, render.objects) then
+                    transform.x = nx
+                end
+
+                local ny = transform.y + dy * dt * 50
+                if not collider.blocked(character, transform.x, ny, render.objects) then
+                    transform.y = ny
+                end
+
                 tag.x = transform.x
                 tag.y = transform.y - 15
 
