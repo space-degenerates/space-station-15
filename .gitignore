@@ -22,3 +22,5 @@ stylua.exe
 dist
 .build
 kaledis.toml
+build
+*.zip
