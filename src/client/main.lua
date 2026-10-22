@@ -114,30 +114,30 @@ function client:run(ip, usernameclient, debugwegot)
             local dy = (love.keyboard.isDown("s", "down") and 1 or 0) - (love.keyboard.isDown("w", "up") and 1 or 0)
 
             if dx ~= 0 or dy ~= 0 then
-                local nx = transform.x + dx * dt * 50
-                if not collider.blocked(character, nx, transform.y, render.objects) then
-                    transform.x = nx
+                local nx = transform.pos.x + dx * dt * 50
+                if not collider.blocked(character, nx, transform.pos.y, render.objects) then
+                    transform.pos.x = nx
                 end
 
-                local ny = transform.y + dy * dt * 50
-                if not collider.blocked(character, transform.x, ny, render.objects) then
-                    transform.y = ny
+                local ny = transform.pos.y + dy * dt * 50
+                if not collider.blocked(character, transform.pos.x, ny, render.objects) then
+                    transform.pos.y = ny
                 end
 
-                tag.x = transform.x
-                tag.y = transform.y - 15
+                tag.x = transform.pos.x
+                tag.y = transform.pos.y - 15
 
                 if dx > 0 then sprite.direction = "east"
                 elseif dx < 0 then sprite.direction = "west"
                 elseif dy > 0 then sprite.direction = "south"
                 elseif dy < 0 then sprite.direction = "north" end
 
-                client:send(string.format("MOVE|%f|%f|%s", transform.x, transform.y, sprite.direction))
+                client:send(string.format("MOVE|%f|%f|%s", transform.pos.x, transform.pos.y, sprite.direction))
             end
 
             local t = math.min(1, dt * 8)
-            render.x = emath.lerp(render.x, transform.x, t)
-            render.y = emath.lerp(render.y, transform.y, t)
+            render.x = emath.lerp(render.x, transform.pos.x, t)
+            render.y = emath.lerp(render.y, transform.pos.y, t)
         elseif socket.gettime() - client.lastAttempt >= 2 then
             client:tryConnect()
             client.lastAttempt = socket.gettime()

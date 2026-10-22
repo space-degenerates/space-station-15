@@ -14,8 +14,8 @@ function Collider.blocked(entity, x, y, list)
 		if obj.get and obj.tile then
 			local wall = obj:get("collider")
 			if wall then
-				local t = obj:get("transform")
-				if x - c.w / 2 < t.x + wall.w / 2 and x + c.w / 2 > t.x - wall.w / 2 and y - c.h / 2 < t.y + wall.h / 2 and y + c.h / 2 > t.y - wall.h / 2 then
+				local pos = obj:get("transform").pos
+				if x - c.w / 2 < pos.x + wall.w / 2 and x + c.w / 2 > pos.x - wall.w / 2 and y - c.h / 2 < pos.y + wall.h / 2 and y + c.h / 2 > pos.y - wall.h / 2 then
 					return true
 				end
 			end

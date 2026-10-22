@@ -42,10 +42,12 @@ function Sprite:Draw(ox, oy)
 	end
 
 	local quad = self.quads and self.quads[directions[self.direction] or 2]
+	local transform = self.entity:get("transform")
+	local pos = transform.pos
 	if quad then
-		love.graphics.draw(self.image, quad, transform.x - ox - self.frameW * sx / 2, transform.y - oy - self.frameH * sy / 2, 0, sx, sy)
+		love.graphics.draw(self.image, quad, pos.x - ox - self.frameW * sx / 2, pos.y - oy - self.frameH * sy / 2, 0, sx, sy)
 	else
-		love.graphics.draw(self.image, transform.x - ox - self.frameW * sx / 2, transform.y - oy - self.frameH * sy / 2, 0, sx, sy)
+		love.graphics.draw(self.image, pos.x - ox - self.frameW * sx / 2, pos.y - oy - self.frameH * sy / 2, 0, sx, sy)
 	end
 end
 
