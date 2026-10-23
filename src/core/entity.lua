@@ -24,4 +24,10 @@ function Entity:Draw(ox, oy)
 	end
 end
 
+function Entity:Update(delta)
+    for _, component in pairs(self.components) do
+		if component.Update then component:Update(delta) end
+	end
+end
+
 return Entity
