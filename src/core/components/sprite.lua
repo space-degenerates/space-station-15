@@ -5,7 +5,8 @@ local directions = { south = 1, north = 2, east = 3, west = 4 }
 
 function Sprite.new(entity, data)
 	local self = setmetatable({}, Sprite)
-	self.entity = entity
+    self.entity = entity
+	self.visible = true
 
 	local ok = pcall(function()
 		self.image = love.graphics.newImage(data.texture)
@@ -32,6 +33,9 @@ function Sprite.new(entity, data)
 end
 
 function Sprite:Draw(ox, oy)
+    if not self.visible then
+        return
+    end
 	ox = ox or 0; oy = oy or 0
 
 	local transform = self.entity:get("transform")
