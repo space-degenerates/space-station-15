@@ -1,9 +1,12 @@
 local Entity = {}
 Entity.__index = Entity
+local EntityCount = 0
 
 function Entity.new()
 	local self = setmetatable({}, Entity)
-	self.components = {}
+    self.components = {}
+    EntityCount = EntityCount + 1
+	self.id = EntityCount
 	return self
 end
 
