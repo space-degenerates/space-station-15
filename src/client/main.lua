@@ -8,6 +8,7 @@ local vector2 = require("core.vector2")
 local emath   = require("core.math")
 local render = require("client.render")
 local text   = require("client.render.text")
+local timer  = require("core.timer")
 
 local logger = logging.logger("Client.Main", logging.colors.blue)
 
@@ -114,12 +115,14 @@ function client:run(ip, usernameclient, debugwegot)
             local dy = (love.keyboard.isDown("s", "down") and 1 or 0) - (love.keyboard.isDown("w", "up") and 1 or 0)
 
             if dx ~= 0 or dy ~= 0 then
-                local nx = transform.pos.x + dx * dt * 50
+                local speed = love.keyboard.isDown("lshift") and 50 or 150
+                local moveVector = vector2.new(dx, dy):Clamp(1)
+                local nx = transform.pos.x + moveVector.x * dt * speed
+                local ny = transform.pos.y + moveVector.y * dt * speed
+
                 if not collider.blocked(character, nx, transform.pos.y, render.objects) then
                     transform.pos.x = nx
                 end
-
-                local ny = transform.pos.y + dy * dt * 50
                 if not collider.blocked(character, transform.pos.x, ny, render.objects) then
                     transform.pos.y = ny
                 end
@@ -127,10 +130,15 @@ function client:run(ip, usernameclient, debugwegot)
                 tag.x = transform.pos.x
                 tag.y = transform.pos.y - 15
 
-                if dx > 0 then sprite.direction = "east"
-                elseif dx < 0 then sprite.direction = "west"
-                elseif dy > 0 then sprite.direction = "south"
-                elseif dy < 0 then sprite.direction = "north" end
+                if dx > 0 then
+                    sprite.direction = "east"
+                elseif dx < 0 then
+                    sprite.direction = "west"
+                elseif dy > 0 then
+                    sprite.direction = "south"
+                elseif dy < 0 then
+                    sprite.direction = "north"
+                end
 
                 client:send(string.format("MOVE|%f|%f|%s", transform.pos.x, transform.pos.y, sprite.direction))
             end
@@ -142,6 +150,8 @@ function client:run(ip, usernameclient, debugwegot)
             client:tryConnect()
             client.lastAttempt = socket.gettime()
         end
+
+        timer.update(dt)
 
         render:update(dt)
     end
