@@ -3,6 +3,7 @@ local logging = require("core.logging")
 local commands = require("server.commands")
 local packets = require("server.packets")
 local map = require("server.map")
+local timer = require("core.timer")
 
 local logger = logging.logger("Server.Main", logging.colors.magenta)
 
@@ -62,11 +63,12 @@ function love.update(delta)
     while data do
         data = data:gsub("\n", "")
 
-    	if debug then logger:log(string.format("%s:%d -> %s", ip, port, data)) end
-    	packets.handle(data, ip, port, server, clients, logger)
+        if debug then logger:log(string.format("%s:%d -> %s", ip, port, data)) end
+        packets.handle(data, ip, port, server, clients, logger)
 
-    	data, ip, port = udp:receivefrom()
+        data, ip, port = udp:receivefrom()
     end
+    timer.update(delta)
 
     love.timer.sleep(0.01)
 end

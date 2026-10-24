@@ -18,19 +18,21 @@ function Vector2.new(x, y)
 	return self
 end
 
----Multiply Point by a point or a number
+---Multiply vector2 by a vector2 or a number
 ---@param target number|engine.vector2
 ---@return engine.vector2
 function Vector2:Mul(target)
     return Vector2.new(self.x * target.x, self.y * target.y)
 end
 
+---Substract 2 vector2's
 ---@param target engine.vector2
 ---@return engine.vector2
 function Vector2:Sub(target)
     return Vector2.new(self.x - target.x, self.y - target.y)
 end
 
+---Summarize 2 vector2's
 ---@param target engine.vector2
 ---@return engine.vector2
 function Vector2:Sum(target)
@@ -39,6 +41,21 @@ end
 
 function Vector2:Clone()
     return Vector2.new(self.x, self.y)
+end
+
+---Clamps the vector length to a max value
+---@param max number
+---@return engine.vector2
+function Vector2:Clamp(max)
+    if self.magnitude > max then
+        return Vector2.new((self.x / self.magnitude) * max, (self.y / self.magnitude) * max)
+    end
+
+    return self
+end
+
+function Vector2:__tostring()
+	return string.format("Vector2 {x: %s, y: %s}", self.x, self.y)
 end
 
 Vector2.ZERO = Vector2.new(0, 0)
