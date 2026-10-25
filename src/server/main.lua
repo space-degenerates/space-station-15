@@ -23,7 +23,7 @@ function Server:init()
 
     map.load("station")
 
-    love.thread.newThread("Server/consolereader.lua"):start()
+    love.thread.newThread("server/consolereader.lua"):start()
     consoleChannel = love.thread.getChannel("console")
 
 	logger:log(string.format("Listening on %s:%d", "127.0.0.1", 22122))
@@ -34,6 +34,7 @@ function Server:sendTo(ip, port, message)
 end
 
 function Server:sendAll(message)
+    if debug then logger:log(message) end
     for ip, ports in next, clients do
         for port, data in next, ports do
             udp:sendto(message .. "\n", ip, port)
