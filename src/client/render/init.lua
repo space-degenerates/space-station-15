@@ -34,7 +34,7 @@ function camera:draw()
         if Client.debug and object.get then
             local hasTrans = object:get("transform")
             if object.id and hasTrans  then
-                print("hasid lala", object.id)
+                --print("hasid lala", object.id)
                 love.graphics.print(object.id, hasTrans.pos.x - (-1920 / 2 + camera.x), hasTrans.pos.y - (-1080 / 2 + camera.y) - 40)
             end
         end
