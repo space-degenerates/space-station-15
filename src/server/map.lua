@@ -7,16 +7,21 @@ map.spawns = {}
 
 function map.load(id)
 	local data = maps.load(id)
-	if not data then return false end
-	map.tiles = data.tiles
-	map.spawns = data.spawns
+    if not data then return false end
+	print(#map.tiles, #map.spawns)
+    for key, name in next, data.tiles do
+        Server.entityCount = Server.entityCount + 1
+        map.tiles[key] = {id = name, eid = Server.entityCount}
+    end
+    map.spawns = data.spawns
+	print("mapload")
 	return true
 end
 
 function map.serialize()
 	local parts = {}
-	for key, id in pairs(map.tiles) do
-		parts[#parts + 1] = key .. "," .. id
+    for key, id in pairs(map.tiles) do
+		parts[#parts + 1] = key .. "," .. id.id .. "," .. id.eid
 	end
 	return table.concat(parts, "|")
 end

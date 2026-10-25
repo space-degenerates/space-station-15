@@ -12,13 +12,13 @@ local timer  = require("core.timer")
 
 local logger = logging.logger("Client.Main", logging.colors.blue)
 
-local client = {}
+Client = {}
 
 local udp
-client.connected = false
+Client.connected = false
 local username
 
-client.players = {}
+Client.players = {}
 
 local character,tag
 local debug
@@ -26,18 +26,18 @@ local debug
 local font       = love.graphics.getFont()
 love.graphics.setDefaultFilter("nearest")
 
-function client:init(ip)
+function Client:init(ip)
 	udp = socket.udp()
 	udp:settimeout(0)
     udp:setpeername(ip, 22122)
 end
 
-function client:send(message)
+function Client:send(message)
     if debug then logger:log(string.format("Sending Message {%s} to server", message)) end
 	udp:send(message .. "\n")
 end
 
-function client:receive()
+function Client:receive()
 	local data, _, _ = udp:receive()
 	if data then
 		if debug then logger:log(string.format("Server sent data {%s}", data)) end
@@ -46,13 +46,15 @@ function client:receive()
 	return nil
 end
 local attemptCount = 0
-function client:tryConnect()
+function Client:tryConnect()
 	attemptCount = attemptCount + 1
-	client:send("CONNECT|" .. username)
+	Client:send("CONNECT|" .. username)
 end
 
-function client:run(ip, usernameclient, debugwegot)
+function Client:run(ip, usernameclient, debugwegot)
+    print(debugwegot)
     debug = (debugwegot == "--debug") and true or false
+    Client.debug = debug
     username = usernameclient
 
     local input = ""
@@ -65,12 +67,12 @@ function client:run(ip, usernameclient, debugwegot)
     function love.update(dt)
         if step < 3 then return end
 
-        if client.bannedAt then
-        	if love.timer.getTime() - client.bannedAt >= 3 then
+        if Client.bannedAt then
+        	if love.timer.getTime() - Client.bannedAt >= 3 then
         		udp:close()
-        		client.bannedAt = nil
-        		client.lastAttempt = nil
-        		client.players = {}
+        		Client.bannedAt = nil
+        		Client.lastAttempt = nil
+        		Client.players = {}
         		attemptCount = 0
         		x, y = .5, .5
         		ip = nil
@@ -80,32 +82,32 @@ function client:run(ip, usernameclient, debugwegot)
         	return
         end
 
-        if not client.lastAttempt then
-            client:init(ip)
-            client.lastAttempt = socket.gettime()
-            client:tryConnect()
+        if not Client.lastAttempt then
+            Client:init(ip)
+            Client.lastAttempt = socket.gettime()
+            Client:tryConnect()
         end
 
-        local data = client:receive()
+        local data = Client:receive()
         while data do
-            packets.handle(data, client, logger)
-            data = client:receive()
+            packets.handle(data, logger)
+            data = Client:receive()
         end
 
-        if client.bannedAt then return end
+        if Client.bannedAt then return end
 
-        if client.connected then
-            if not client.loaded then
-                local spawnX = client.spawnX or 0
-                local spawnY = client.spawnY or 0
+        if Client.connected then
+            if not Client.loaded then
+                local spawnX = Client.spawnX or 0
+                local spawnY = Client.spawnY or 0
 
-                character = entities.spawn("player", spawnX, spawnY)
-                client.character = character
+                character = entities.spawn("player", spawnX, spawnY, Client.charId)
+                Client.character = character
                 table.insert(render.objects, character)
                 tag = text.new(username, vector2.new(spawnX, spawnY - 15))
-                client.tag = tag
+                Client.tag = tag
 
-                client.loaded = true
+                Client.loaded = true
             end
 
             local transform = character:get("transform")
@@ -140,15 +142,15 @@ function client:run(ip, usernameclient, debugwegot)
                     sprite.direction = "north"
                 end
 
-                client:send(string.format("MOVE|%f|%f|%s", transform.pos.x, transform.pos.y, sprite.direction))
+                Client:send(string.format("MOVE|%f|%f|%s", transform.pos.x, transform.pos.y, sprite.direction))
             end
 
             local t = math.min(1, dt * 8)
             render.x = emath.lerp(render.x, transform.pos.x, t)
             render.y = emath.lerp(render.y, transform.pos.y, t)
-        elseif socket.gettime() - client.lastAttempt >= 2 then
-            client:tryConnect()
-            client.lastAttempt = socket.gettime()
+        elseif socket.gettime() - Client.lastAttempt >= 2 then
+            Client:tryConnect()
+            Client.lastAttempt = socket.gettime()
         end
 
         timer.update(dt)
@@ -159,8 +161,8 @@ function client:run(ip, usernameclient, debugwegot)
     function love.draw()
         local w, h = love.graphics.getDimensions()
 
-        if client.bannedAt then
-            love.graphics.print(client.message, w / 2 - font:getWidth(client.message) / 2, h / 2 - font:getHeight() / 2)
+        if Client.bannedAt then
+            love.graphics.print(Client.message, w / 2 - font:getWidth(Client.message) / 2, h / 2 - font:getHeight() / 2)
             return
         end
 
@@ -170,7 +172,7 @@ function client:run(ip, usernameclient, debugwegot)
             return
         end
 
-        if not client.connected then
+        if not Client.connected then
             local text = string.format("Connecting... (Attempt %s)", attemptCount)
             love.graphics.print(text, w / 2 - font:getWidth(text) / 2, h / 2 - font:getHeight() / 2)
             return
@@ -207,9 +209,9 @@ function client:run(ip, usernameclient, debugwegot)
     end
 
     function love.quit()
-        if not client.connected then return end
-        client:send("EXIT")
+        if not Client.connected then return end
+        Client:send("EXIT")
     end
 end
 
-return client
+return Client
