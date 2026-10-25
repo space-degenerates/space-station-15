@@ -8,7 +8,9 @@ map.spawns = {}
 function map.load(id)
 	local data = maps.load(id)
     if not data then return false end
-	print(#map.tiles, #map.spawns)
+    print(#map.tiles, #map.spawns)
+    map.tiles = {}
+	map.spawns = {}
     for key, name in next, data.tiles do
         Server.entityCount = Server.entityCount + 1
         map.tiles[key] = {id = name, eid = Server.entityCount}
