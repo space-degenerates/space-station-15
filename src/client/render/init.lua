@@ -29,7 +29,15 @@ function camera:draw()
     --logger:log(string.format("inserted, count = %s", #camera.objects))
 
     for i, object in next, camera.objects do
-        object:Draw(-1920/2 + camera.x, -1080/2 + camera.y)
+        object:Draw(-1920 / 2 + camera.x, -1080 / 2 + camera.y)
+
+        if Client.debug and object.get then
+            local hasTrans = object:get("transform")
+            if object.id and hasTrans  then
+                print("hasid lala", object.id)
+                love.graphics.print(object.id, hasTrans.pos.x - (-1920 / 2 + camera.x), hasTrans.pos.y - (-1080 / 2 + camera.y) - 40)
+            end
+        end
     end
 
     love.graphics.setCanvas()

@@ -1,7 +1,7 @@
 local render = require("client.render")
 
-return function(name, client)
-	local entity = client.players[name]
+return function(name)
+	local entity = Client.players[name]
 	if entity then
 		for i = #render.objects, 1, -1 do
 			if render.objects[i] == entity or render.objects[i] == entity.tag then
@@ -9,5 +9,5 @@ return function(name, client)
 			end
 		end
 	end
-	client.players[name] = nil
+	Client.players[name] = nil
 end

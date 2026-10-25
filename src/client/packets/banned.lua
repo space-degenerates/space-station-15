@@ -1,6 +1,6 @@
-return function(content, client, logger)
+return function(content, logger)
 	logger:log(content)
-	client.connected = false
-	client.bannedAt = love.timer.getTime()
-	client.message = content
+	Client.connected = false
+	Client.bannedAt = love.timer.getTime()
+	Client.message = content
 end

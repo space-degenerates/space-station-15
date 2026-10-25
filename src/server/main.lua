@@ -7,32 +7,33 @@ local timer = require("core.timer")
 
 local logger = logging.logger("Server.Main", logging.colors.magenta)
 
-local server = {}
+Server = {}
 
 local udp
 local clients = {}
+Server.entityCount = 0
 
 local debug
 local consoleChannel
 
-function server:init()
+function Server:init()
 	udp = socket.udp()
 	udp:settimeout(0)
     udp:setsockname("0.0.0.0", 22122)
 
     map.load("station")
 
-    love.thread.newThread("server/consolereader.lua"):start()
+    love.thread.newThread("Server/consolereader.lua"):start()
     consoleChannel = love.thread.getChannel("console")
 
 	logger:log(string.format("Listening on %s:%d", "127.0.0.1", 22122))
 end
 
-function server:sendTo(ip, port, message)
+function Server:sendTo(ip, port, message)
     udp:sendto(message .. "\n", ip, port)
 end
 
-function server:sendAll(message)
+function Server:sendAll(message)
     for ip, ports in next, clients do
         for port, data in next, ports do
             udp:sendto(message .. "\n", ip, port)
@@ -40,7 +41,7 @@ function server:sendAll(message)
     end
 end
 
-function server:sendAllExcept(exIp, exPort, message)
+function Server:sendAllExcept(exIp, exPort, message)
     for ip, ports in next, clients do
         for port in next, ports do
             if not (ip == exIp and port == exPort) then
@@ -51,11 +52,11 @@ function server:sendAllExcept(exIp, exPort, message)
 end
 
 function love.update(delta)
-    if not server.started then return end
+    if not Server.started then return end
 
     local line = consoleChannel:pop()
     while line do
-        commands.handle(line, server, clients, logger)
+        commands.handle(line, Server, clients, logger)
         line = consoleChannel:pop()
     end
 
@@ -64,7 +65,7 @@ function love.update(delta)
         data = data:gsub("\n", "")
 
         if debug then logger:log(string.format("%s:%d -> %s", ip, port, data)) end
-        packets.handle(data, ip, port, server, clients, logger)
+        packets.handle(data, ip, port, Server, clients, logger)
 
         data, ip, port = udp:receivefrom()
     end
@@ -73,21 +74,21 @@ function love.update(delta)
     love.timer.sleep(0.01)
 end
 
-function server:run(debugwegot)
+function Server:run(debugwegot)
 	--require("@core/module")()
 	debug = (debugwegot == "--debug") and true or false
-	server:init()
-	server.started = true
+	Server:init()
+	Server.started = true
 end
 
 function love.quit()
     for ip, ports in next, clients do
         for port in next, ports do
-            server:sendTo(ip, port, "SERVER_CLOSE|Server shutting off.")
+            Server:sendTo(ip, port, "Server_CLOSE|Server shutting off.")
         end
     end
 end
 
 --function love.draw() end
 
-return server
+return Server
