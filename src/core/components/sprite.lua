@@ -50,10 +50,8 @@ end
 
 function Sprite:Update(delta)
     if not self.frames then return end
-    print("updated")
     self.time = self.time + delta
     if self.time >= 1 / self.fps then
-        print(self.frame)
         self.time = 0
         self.frame = self.frame + 1
         if self.frame > #self.animationQuads then

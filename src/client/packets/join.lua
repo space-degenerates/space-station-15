@@ -3,12 +3,12 @@ local vector2 = require("core.vector2")
 local text = require("client.render.text")
 local render = require("client.render")
 
-return function(content, client)
-	local name, x, y, dir, proto = content:match("^(.-)|(.-)|(.-)|(.-)|(.*)$")
-	local entity = entities.spawn(proto or "player", x, y)
+return function(content)
+	local name, x, y, dir, proto, eid = content:match("^(.-)|(.-)|(.-)|(.-)|(.-)|(.*)$")
+	local entity = entities.spawn(proto or "player", x, y, eid)
 	entity:get("sprite").direction = dir
 	entity.tag = text.new(name, vector2.new(x, y - 20))
 
 	table.insert(render.objects, entity)
-	client.players[name] = entity
+	Client.players[name] = entity
 end

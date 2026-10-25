@@ -1,12 +1,30 @@
+local EntitySystem = {}
+EntitySystem.entities = {}
+
 local Entity = {}
 Entity.__index = Entity
 local EntityCount = 0
 
-function Entity.new()
+function EntitySystem.new(forceId)
 	local self = setmetatable({}, Entity)
     self.components = {}
     EntityCount = EntityCount + 1
-	self.id = EntityCount
+    if forceId then
+        print(forceId, "forceid")
+        if EntitySystem[forceId] then
+            local idx
+            repeat
+                idx = math.random(4000, 15000)
+            until not EntitySystem.entities[idx]
+            EntitySystem[idx] = EntitySystem[forceId]
+        end
+        self.id = forceId
+        EntitySystem.entities[forceId] = self
+        print(self.id, "id")
+    else
+        self.id = EntityCount
+        EntitySystem.entities[self.id] = self
+    end
 	return self
 end
 
@@ -30,4 +48,4 @@ function Entity:Update(delta)
 	end
 end
 
-return Entity
+return EntitySystem

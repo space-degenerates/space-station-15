@@ -1,6 +1,6 @@
-return function(content, client)
+return function(content)
 	local name, x, y, dir = content:match("^(.-)|(.-)|(.-)|(.*)$")
-	local entity = client.players[name]
+	local entity = Client.players[name]
 	if not entity then return end
 
 	entity:get("transform").pos.x = x

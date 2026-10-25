@@ -7,7 +7,7 @@ return function()
 
     tiles["96,0"] = "evilthing"
     tiles["96,32"] = "wallAnimated"
-
+    print("returning")
 	return {
 		spawns = { { -32, 0 }, { -32, 32 }, { -32, -32 } },
 		tiles = tiles,
