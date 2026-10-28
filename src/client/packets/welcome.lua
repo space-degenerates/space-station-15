@@ -1,6 +1,6 @@
-local entities = require "core.entity"
-return function(content, logger)
+
+return function(content)
     Client.connected = true
     Client.charId = tonumber(content)
-	logger:log("Connected to server")
+	Client.logger:log("Connected to server")
 end

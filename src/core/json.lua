@@ -183,17 +183,20 @@ function json.parse(str, pos, end_delim)
 	pos = pos + #str:match("^%s*", pos) -- Skip whitespace.
 	local first = str:sub(pos, pos)
 	if first == "{" then -- Parse an object.
-		local obj, key, delim_found = {}, true, true
+        local obj, delim_found = {}, true
+        ---@type any
+		local key = true
 		pos = pos + 1
 		while true do
             key, pos = json.parse(str, pos, "}")
-			if key == nil then
-				return obj, pos
-			end
 			if not delim_found then
 				error("Comma missing between object items.")
 			end
 			pos = skip_delim(str, pos, ":", true) -- true -> error if missing.
+            if key == nil then
+                return obj, pos
+            end
+			---@diagnostic disable-next-line
 			obj[key], pos = json.parse(str, pos)
 			pos, delim_found = skip_delim(str, pos, ",")
 		end
@@ -201,6 +204,7 @@ function json.parse(str, pos, end_delim)
 		local arr, val, delim_found = {}, true, true
 		pos = pos + 1
 		while true do
+		    ---@diagnostic disable-next-line
 			val, pos = json.parse(str, pos, "]")
 			if val == nil then
 				return arr, pos

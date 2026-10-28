@@ -10,7 +10,7 @@ local logger = logging.logger("Server.Main", logging.colors.magenta)
 Server = {}
 
 local udp
-local clients = {}
+Server.clients = {}
 Server.entityCount = 0
 
 local debug
@@ -34,7 +34,7 @@ function Server:sendTo(ip, port, message)
 end
 
 function Server:sendAll(message)
-    for ip, ports in next, clients do
+    for ip, ports in next, Server.clients do
         for port, data in next, ports do
             udp:sendto(message .. "\n", ip, port)
         end
@@ -42,7 +42,7 @@ function Server:sendAll(message)
 end
 
 function Server:sendAllExcept(exIp, exPort, message)
-    for ip, ports in next, clients do
+    for ip, ports in next, Server.clients do
         for port in next, ports do
             if not (ip == exIp and port == exPort) then
                 udp:sendto(message .. "\n", ip, port)
@@ -56,7 +56,7 @@ function love.update(delta)
 
     local line = consoleChannel:pop()
     while line do
-        commands.handle(line, Server, clients, logger)
+        commands.handle(line, logger)
         line = consoleChannel:pop()
     end
 
@@ -65,7 +65,7 @@ function love.update(delta)
         data = data:gsub("\n", "")
 
         if debug then logger:log(string.format("%s:%d -> %s", ip, port, data)) end
-        packets.handle(data, ip, port, Server, clients, logger)
+        packets.handle(data, ip, port, logger)
 
         data, ip, port = udp:receivefrom()
     end
@@ -82,7 +82,7 @@ function Server:run(debugwegot)
 end
 
 function love.quit()
-    for ip, ports in next, clients do
+    for ip, ports in next, Server.clients do
         for port in next, ports do
             Server:sendTo(ip, port, "Server_CLOSE|Server shutting off.")
         end

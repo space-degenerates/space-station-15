@@ -1,9 +1,8 @@
-local entity   = require "core.entity"
+local entity = require("core.entity")
 
 return function(content)
     local id, property, value, component = content:match("^(.-)|(.-)|(.-)|(.*)$")
 
-    print(#entity.entities, id)
     local ent = entity.entities[tonumber(id)]
     if value == "true" then
         value = true

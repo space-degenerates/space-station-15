@@ -3,8 +3,9 @@ local entity = require("core.entity")
 return function(x, y, forceId)
 	local ent = entity.new(forceId)
 	ent.tile = true
+	ent.layer = 1
 	ent:add("transform", { x = x, y = y })
 	ent:add("sprite", { texture = "core/textures/SomewhatKnownTexture.png", size = 32 })
-	ent:add("collider", { w = 32, h = 32, behavior = "door", behaviorProp = {duration = 6} })
+    ent:add("collider", { w = 32, h = 32, behavior = "door", behaviorProp = { duration = 6 } })
 	return ent
 end

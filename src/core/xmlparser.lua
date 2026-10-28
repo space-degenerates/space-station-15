@@ -120,8 +120,10 @@ function module.newParser()
 		local stack = {}
 		local top = newNode()
 		table.insert(stack, top)
-		local ni, c, label, xarg, empty
-		local i, j = 1, 1
+        local ni, c, label, xarg, empty
+        local i = 1
+        ---@type integer?
+		local j = 1
 		while true do
 			ni, j, c, label, xarg, empty = string.find(xmlText, "<(%/?)([%w_:]+)(.-)(%/?)>", i)
 			if not ni then

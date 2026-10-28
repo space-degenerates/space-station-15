@@ -1,5 +1,4 @@
 local doorBehavior = require("core.colliderbehaviors.door")
-return function(content, ip, port, server, clients)
-    print(content)
+return function(content, ip, port)
     doorBehavior({tonumber(content)})
 end

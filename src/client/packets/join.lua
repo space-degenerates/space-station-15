@@ -7,7 +7,7 @@ return function(content)
 	local name, x, y, dir, proto, eid = content:match("^(.-)|(.-)|(.-)|(.-)|(.-)|(.*)$")
 	local entity = entities.spawn(proto or "player", x, y, eid)
 	entity:get("sprite").direction = dir
-	entity.tag = text.new(name, vector2.new(x, y - 20))
+	entity:get("label").text = name
 
 	table.insert(render.objects, entity)
 	Client.players[name] = entity
