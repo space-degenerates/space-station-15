@@ -23,7 +23,7 @@ function Server:init()
 
     map.load("station")
 
-    love.thread.newThread("Server/consolereader.lua"):start()
+    love.thread.newThread("server/consolereader.lua"):start()
     consoleChannel = love.thread.getChannel("console")
 
 	logger:log(string.format("Listening on %s:%d", "127.0.0.1", 22122))
