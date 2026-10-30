@@ -28,8 +28,8 @@ function EntitySystem.new(forceId)
 	return self
 end
 
-function Entity:add(name, data)
-	self.components[name] = require("core.components." .. name).new(self, data)
+function Entity:add(name, data, forceName)
+	self.components[forceName or name] = require("core.components." .. name).new(self, data)
 end
 
 function Entity:get(name)
@@ -37,7 +37,11 @@ function Entity:get(name)
 end
 
 function Entity:Draw(ox, oy)
-	for _, component in pairs(self.components) do
+    table.sort(self.components, function (a, b)
+        if not a.layer or not b.layer then return false end
+        return a.layer > b.layer
+    end)
+    for _, component in pairs(self.components) do
 		if component.Draw then component:Draw(ox, oy) end
 	end
 end

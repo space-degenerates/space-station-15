@@ -10,6 +10,8 @@ function Sprite.new(entity, data)
     self.fps = data.fps
     self.frame = 1
     self.time = 0
+    self.noDrag = data.noDrag
+    self.layer = data.layer or 1
 
     local ok = pcall(function()
         self.image = love.graphics.newImage(data.texture)
@@ -64,9 +66,12 @@ function Sprite:Draw(ox, oy)
     if not self.visible then
         return
     end
-	ox = ox or 0; oy = oy or 0
 
-	local transform = self.entity:get("transform")
+    if self.noDrag then
+        ox = 0; oy = 0
+    else
+        ox = ox or 0; oy = oy or 0
+    end
 	local sx, sy = 1, 1
 	if self.size > 0 then
 		sx = self.size / self.frameW

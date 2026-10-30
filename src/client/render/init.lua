@@ -27,6 +27,13 @@ function camera:draw()
     love.graphics.setCanvas(camera.canvas)
     love.graphics.clear(.5,.5,.5)
     --logger:log(string.format("inserted, count = %s", #camera.objects))
+    table.sort(camera.objects, function (a, b)
+        if a.layer and b.layer then
+            return b.layer > a.layer
+        else
+            return false
+        end
+    end)
 
     for i, object in next, camera.objects do
         object:Draw(-1920 / 2 + camera.x, -1080 / 2 + camera.y)
@@ -34,7 +41,6 @@ function camera:draw()
         if Client.debug and object.get then
             local hasTrans = object:get("transform")
             if object.id and hasTrans  then
-                --print("hasid lala", object.id)
                 love.graphics.print(object.id, hasTrans.pos.x - (-1920 / 2 + camera.x), hasTrans.pos.y - (-1080 / 2 + camera.y) - 40)
             end
         end
@@ -42,7 +48,8 @@ function camera:draw()
 
     love.graphics.setCanvas()
 
-    love.graphics.draw(self.canvas, camera.offsetX, camera.offsetY, 0, camera.scale, camera.scale)
+    love.graphics.draw(self.canvas, camera.offsetX, camera.offsetY, 0, camera.scale)
+    love.graphics.scale(camera.zoom, camera.zoom)
 end
 
 return camera
